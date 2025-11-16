@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <title>player_app ログイン</title>
+</head>
+<body>
+    <header>
+        <h1>ログイン画面</h1>
+    </header>
+
+    <main>
+    <div class="card">
+        <form method = "POST">
+        {% csrf_token %}
+        <ul>
+        <li><label for = "id_mail">メールアドレス</label>
+        <input type="text" name="email" id="id_email" value="{{form_login.email.value|default_if_none:''}}"></li>
+        {% if form_login.email.errors %}
+        <div class="error">{{form_login.email.error}}</div>
+        {% endif %}
+
+        <li><label for = "id_password">パスワード</label>
+        <input type="password" name="password" id="id_password" value="{{form_login.password.value|default_if_none:''}}"></li>
+        {% if form_login.password.errors %}
+        <div class="error">{{form_login.password.error}}</div>
+        {% endif %}
+        </ul>
+        <input type="submit" value="送信">
+        </form>      
+        </div>
+
+    <p><a href="{% url 'player_app:search'%}">TOPへ戻る</a></p>
+    </main>
+</body>
+</html>
+
+<style>
+ul {
+    list-style-type: none;       
+}
+
+.card {
+    border: 1px solid #ccc;
+    padding: 15px;
+    margin: 10px 0;
+    border-radius: 8px;
+    box-shadow: 2px 2px 5px rgba(0,0,0,0.3);
+    background-color: #fff9efff;
+    }
+</style>

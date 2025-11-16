@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <title>Player_Search</title>
+</head>
+<body>
+
+    <header>
+    <h1>横浜DeNAベイスターズ 選手成績・指標検索</h1>
+    </header>
+
+    <main>
+    <div class="card">
+    <h2>選手検索</h2>
+    <form method="POST" action="{% url 'player_app:result'%}">
+    {% csrf_token %}
+
+    <ul>
+    <li><label for="id_searchplayer">検索したい選手の名前を入力してください(一部でも可)</label>
+    <input type="text" name="player_name" id="id_searchplayer" value="{{name|default:''}}"></li>
+    </ul>
+    <input type="submit" value="検索">
+    </form>
+    </div>
+    <p><a href="{% url 'player_app:all_player'%}">選手一覧はこちら</a></p>
+    <p><a href="{% url 'player_app:login'%}">ログインはこちら</a></p>
+    <p><a href="{% url 'player_app:register_user'%}">ユーザー登録はこちら</a></p>
+    <p><a href="{% url 'player_app:register_original_batter'%}">オリジナル打者登録はこちら</a></p>
+    <p><a href="{% url 'player_app:register_original_pitcher'%}">オリジナル投手登録はこちら</a></p>
+    <p><a href="{% url 'player_app:original_player_result'%}">オリジナル選手一覧はこちら</a></p>
+    </main>
+</body>
+</html>
+
+<style>
+ul {
+    list-style-type: none;       
+}
+
+.card {
+    border: 1px solid #ccc;
+    padding: 15px;
+    margin: 10px 0;
+    border-radius: 8px;
+    box-shadow: 2px 2px 5px rgba(0,0,0,0.3);
+    background-color: #fff9efff;
+    }
+</style>

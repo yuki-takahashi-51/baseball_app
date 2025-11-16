@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <title>{{player.player_name}}</title>
+</head>
+
+<body>
+    <header>
+    <h1>{{ player.player_name }} (背番号: {{ player.uniform_number }})</h1>
+    </header>
+
+    <main>
+    {% if batting %}
+    <div class="card">
+    <h2>打撃成績</h2>
+    <table class="status">
+        <tr>
+            <th>試合数</th><th>打席</th><th>打数</th><th>安打</th><th>本塁打</th>
+            <th>打点</th><th>盗塁</th><th>四球</th><th>三振</th>
+        </tr>
+        <tr>
+            <td>{{ batting.games|default:0 }}</td>
+            <td>{{ batting.numPlate|default:0  }}</td>
+            <td>{{ batting.numBat|default:0  }}</td>
+            <td>{{ batting.hits|default:0  }}</td>
+            <td>{{ batting.homeruns|default:0  }}</td>
+            <td>{{ batting.getpoint|default:0  }}</td>
+            <td>{{ batting.steal|default:0  }}</td>
+            <td>{{ batting.fourballs|default:0  }}</td>
+            <td>{{ batting.strikeOut|default:0  }}</td>
+        </tr>
+    </table>
+    <a href="{% url 'player_app:more_detail' uniform_number=player.uniform_number%}">さらに詳しい情報を表示</a>
+    
+    </div>
+    {% endif %}
+
+    {% if pitching %}
+    <div class="card">
+    <h2>投球成績</h2>
+    <table class="status">
+        <tr>
+            <th>勝敗</th><th>ホールド</th><th>セーブ</th><th>防御率</th><th>登板数</th>
+            <th>投球回</th><th>完投</th><th>完封</th><th>対戦打者数</th><th>三振</th>
+            <th>被安打</th><th>被本塁打</th><th>与四球</th><th>与死球</th><th>自責点</th>
+        </tr>
+        <tr>
+            <td>{{ pitching.win|default:0  }}勝{{ pitching.lose|default:0  }}敗</td>
+            <td>{{ pitching.hold|default:0  }}</td>
+            <td>{{ pitching.saves|default:0  }}</td>
+            <td>{{ pitching.ERA|default:0  }}</td>
+            <td>{{ pitching.games|default:0  }}</td>
+            <td>{{ pitching.ining|default:0  }}</td>
+            <td>{{ pitching.fullIning|default:0  }}</td>
+            <td>{{ pitching.perfect|default:0  }}</td>
+            <td>{{ pitching.batter|default:0  }}</td>
+            <td>{{ pitching.strikeOut|default:0  }}</td>
+            <td>{{ pitching.hit|default:0  }}</td>
+            <td>{{ pitching.homerun|default:0  }}</td>
+            <td>{{ pitching.fourball|default:0  }}</td>
+            <td>{{ pitching.deadBall|default:0  }}</td>
+            <td>{{ pitching.earnedRun|default:0  }}</td>
+        </tr>
+    </table>
+    <p><a href="{% url 'player_app:more_detail' uniform_number=player.uniform_number%}">さらに詳しい情報を表示</a></p>
+    
+    </div>
+    {% endif %}
+
+    <p><a href="{% url 'player_app:search'%}">TOPへ戻る</a></p>
+    </main>
+
+
+</body>
+</html>
+<style>
+ul {
+    list-style-type: none;       
+}
+
+table.status {
+    border-collapse: collapse; 
+    width: 100%;
+}
+
+table.status th,
+table.status td {
+    border: 1px solid black;   
+    padding: 5px;              
+    text-align: center;      
+}
+
+.card {
+    border: 1px solid #ccc;
+    padding: 15px;
+    margin: 10px 0;
+    border-radius: 8px;
+    box-shadow: 2px 2px 5px rgba(0,0,0,0.3);
+    background-color: #fff7ebff;
+    }
+    
+</style>

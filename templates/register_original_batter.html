@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="ja">
+    <head>
+        <meta charset="UTF-8">
+        <title>Register_original_batter</title>
+    </head>
+    <body>
+        <main>
+            <div class="card">
+            <h1>オリジナル打者登録画面</h1>
+            <form method="post">
+                {% csrf_token %}
+
+                <ul>
+                    <li><label for="id_uniform_number">背番号</label>
+                        <input type="number" name="uniform_number" id="id_uniform_number" value="{{ form_register_batter.uniform_number.value|default_if_none:'' }}"></li>
+                    {% if form_register_batter.uniform_number.errors %}
+                        <div class="error">{{ form_register_batter.uniform_number.errors }}</div>
+                    {% endif %}
+
+                    <li><label for="id_player_name">選手名</label>
+                        <input type="text" name="player_name" id="id_player_name" value="{{ form_register_batter.player_name.value|default_if_none:'' }}"></li>
+                    {% if form_register_batter.player_name.errors %}
+                        <div class="error">{{ form_register_batter.player_name.errors }}</div>
+                    {% endif %}
+
+                    <li><label for="id_games">試合数</label>
+                        <input type="number" name="games" id="id_games" value="{{ form_register_batter.games.value|default_if_none:'' }}"></li>
+                    {% if form_register_batter.games.errors %}
+                        <div class="error">{{ form_register_batter.games.errors }}</div>
+                    {% endif %}
+
+                    <li><label for="id_numPlate">打席数</label>
+                        <input type="number" name="numPlate" id="id_numPlate" value="{{ form_register_batter.numPlate.value|default_if_none:'' }}"></li>
+                    {% if form_register_batter.numPlate.errors %}
+                        <div class="error">{{ form_register_batter.numPlate.errors }}</div>
+                    {% endif %}
+
+                    <li><label for="id_numBat">打数</label>
+                        <input type="number" name="numBat" id="id_numBat" value="{{ form_register_batter.numBat.value|default_if_none:'' }}"></li>
+                    {% if form_register_batter.numBat.errors %}
+                        <div class="error">{{ form_register_batter.numBat.errors }}</div>
+                    {% endif %}
+
+                    <li><label for="id_points">得点</label>
+                        <input type="number" name="points" id="id_points" value="{{ form_register_batter.points.value|default_if_none:'' }}"></li>
+                    {% if form_register_batter.points.errors %}
+                        <div class="error">{{ form_register_batter.points.errors }}</div>
+                    {% endif %}
+
+                    <li><label for="id_hits">安打数</label>
+                        <input type="number" name="hits" id="id_hits" value="{{ form_register_batter.hits.value|default_if_none:'' }}"></li>
+                    {% if form_register_batter.hits.errors %}
+                        <div class="error">{{ form_register_batter.hits.errors }}</div>
+                    {% endif %}
+
+                    <li><label for="id_hit2nd">二塁打</label>
+                        <input type="number" name="hit2nd" id="id_hit2nd" value="{{ form_register_batter.hit2nd.value|default_if_none:'' }}"></li>
+                    {% if form_register_batter.hit2nd.errors %}
+                        <div class="error">{{ form_register_batter.hit2nd.errors }}</div>
+                    {% endif %}
+
+                    <li><label for="id_hit3rd">三塁打</label>
+                        <input type="number" name="hit3rd" id="id_hit3rd" value="{{ form_register_batter.hit3rd.value|default_if_none:'' }}"></li>
+                    {% if form_register_batter.hit3rd.errors %}
+                        <div class="error">{{ form_register_batter.hit3rd.errors }}</div>
+                    {% endif %}
+
+                    <li><label for="id_homeruns">本塁打</label>
+                        <input type="number" name="homeruns" id="id_homeruns" value="{{ form_register_batter.homeruns.value|default_if_none:'' }}"></li>
+                    {% if form_register_batter.homeruns.errors %}
+                        <div class="error">{{ form_register_batter.homeruns.errors }}</div>
+                    {% endif %}
+
+                    <li><label for="id_baseHits">塁打数</label>
+                        <input type="number" name="baseHits" id="id_baseHits" value="{{ form_register_batter.baseHits.value|default_if_none:'' }}"></li>
+                    {% if form_register_batter.baseHits.errors %}
+                        <div class="error">{{ form_register_batter.baseHits.errors }}</div>
+                    {% endif %}
+
+                    <li><label for="id_getpoint">打点</label>
+                        <input type="number" name="getpoint" id="id_getpoint" value="{{ form_register_batter.getpoint.value|default_if_none:'' }}"></li>
+                    {% if form_register_batter.getpoint.errors %}
+                        <div class="error">{{ form_register_batter.getpoint.errors }}</div>
+                    {% endif %}
+
+                    <li><label for="id_steal">盗塁</label>
+                        <input type="number" name="steal" id="id_steal" value="{{ form_register_batter.steal.value|default_if_none:'' }}"></li>
+                    {% if form_register_batter.steal.errors %}
+                        <div class="error">{{ form_register_batter.steal.errors }}</div>
+                    {% endif %}
+
+                    <li><label for="id_missedSteal">盗塁死</label>
+                        <input type="number" name="missedSteal" id="id_missedSteal" value="{{ form_register_batter.missedSteal.value|default_if_none:'' }}"></li>
+                    {% if form_register_batter.missedSteal.errors %}
+                        <div class="error">{{ form_register_batter.missedSteal.errors }}</div>
+                    {% endif %}
+
+                    <li><label for="id_bants">犠打</label>
+                        <input type="number" name="bants" id="id_bants" value="{{ form_register_batter.bants.value|default_if_none:'' }}"></li>
+                    {% if form_register_batter.bants.errors %}
+                        <div class="error">{{ form_register_batter.bants.errors }}</div>
+                    {% endif %}
+
+                    <li><label for="id_sacFry">犠飛</label>
+                        <input type="number" name="sacFry" id="id_sacFry" value="{{ form_register_batter.sacFry.value|default_if_none:'' }}"></li>
+                    {% if form_register_batter.sacFry.errors %}
+                        <div class="error">{{ form_register_batter.sacFry.errors }}</div>
+                    {% endif %}
+
+                    <li><label for="id_fourballs">四球</label>
+                        <input type="number" name="fourballs" id="id_fourballs" value="{{ form_register_batter.fourballs.value|default_if_none:'' }}"></li>
+                    {% if form_register_batter.fourballs.errors %}
+                        <div class="error">{{ form_register_batter.fourballs.errors }}</div>
+                    {% endif %}
+
+                    <li><label for="id_intWalk">敬遠</label>
+                        <input type="number" name="intWalk" id="id_intWalk" value="{{ form_register_batter.intWalk.value|default_if_none:'' }}"></li>
+                    {% if form_register_batter.intWalk.errors %}
+                        <div class="error">{{ form_register_batter.intWalk.errors }}</div>
+                    {% endif %}
+
+                    <li><label for="id_deadballs">死球</label>
+                        <input type="number" name="deadballs" id="id_deadballs" value="{{ form_register_batter.deadballs.value|default_if_none:'' }}"></li>
+                    {% if form_register_batter.deadballs.errors %}
+                        <div class="error">{{ form_register_batter.deadballs.errors }}</div>
+                    {% endif %}
+
+                    <li><label for="id_strikeOut">三振</label>
+                        <input type="number" name="strikeOut" id="id_strikeOut" value="{{ form_register_batter.strikeOut.value|default_if_none:'' }}"></li>
+                    {% if form_register_batter.strikeOut.errors %}
+                        <div class="error">{{ form_register_batter.strikeOut.errors }}</div>
+                    {% endif %}
+
+                    <li><label for="id_doublePlay">併殺打</label>
+                        <input type="number" name="doublePlay" id="id_doublePlay" value="{{ form_register_batter.doublePlay.value|default_if_none:'' }}"></li>
+                    {% if form_register_batter.doublePlay.errors %}
+                        <div class="error">{{ form_register_batter.doublePlay.errors }}</div>
+                    {% endif %}
+
+                    <li><label for="id_errors">失策</label>
+                        <input type="number" name="errors" id="id_errors" value="{{ form_register_batter.errors.value|default_if_none:'' }}"></li>
+                    {% if form_register_batter.errors.errors %}
+                        <div class="error">{{ form_register_batter.errors.errors }}</div>
+                    {% endif %}
+
+                    <li><label for="id_birthday">生年月日</label>
+                        <input type="date" name="birthday" id="id_birthday" value="{{ form_register_batter.birthday.value|default_if_none:'' }}"></li>
+                    {% if form_register_batter.birthday.errors %}
+                        <div class="error">{{ form_register_batter.birthday.errors }}</div>
+                    {% endif %}
+
+                    <li><label for="id_position">守備位置</label>
+                        <input type="text" name="position" id="id_position" maxlength="1" value="{{ form_register_batter.position.value|default_if_none:'' }}"></li>
+                    {% if form_register_batter.position.errors %}
+                        <div class="error">{{ form_register_batter.position.errors }}</div>
+                    {% endif %}
+
+                    <li><label for="id_batting_hand">打ち手</label>
+                        <input type="text" name="batting_hand" id="id_batting_hand" maxlength="1" value="{{ form_register_batter.batting_hand.value|default_if_none:'' }}"></li>
+                    {% if form_register_batter.batting_hand.errors %}
+                        <div class="error">{{ form_register_batter.batting_hand.errors }}</div>
+                    {% endif %}
+
+                    <li><label for="id_throwing_hand">投げ手</label>
+                        <input type="text" name="throwing_hand" id="id_throwing_hand" maxlength="1" value="{{ form_register_batter.throwing_hand.value|default_if_none:'' }}"></li>
+                    {% if form_register_batter.throwing_hand.errors %}
+                        <div class="error">{{ form_register_batter.throwing_hand.errors }}</div>
+                    {% endif %}
+                </ul>
+                <button type="submit">登録</button>
+            </form>    
+            </div>
+            <p><a href="{% url 'player_app:search'%}">TOPへ戻る</a></p>
+        </main>
+    </body>
+</html>
+
+<style>
+ul {
+    list-style-type: none;       
+}
+
+.card {
+    border: 1px solid #ccc;
+    padding: 15px;
+    margin: 10px 0;
+    border-radius: 8px;
+    box-shadow: 2px 2px 5px rgba(0,0,0,0.3);
+    background-color: #fff9efff;
+    }
+</style>

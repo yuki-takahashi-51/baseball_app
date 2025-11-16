@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <title>Player_result</title>
+</head>
+<body>
+
+    <header>
+    <h1>検索結果一覧</h1>
+    </header>
+    <main>
+    {% if players %}
+   <table class="status">
+    <tr>
+        <th>背番号</th>
+        <th>名前</th>
+        <th>詳細</th>
+        <th>CSV</th>
+    </tr>
+    {% for player in players %}
+    <tr>
+        <td>{{ player.uniform_number }}</td>
+        <td>{{ player.player_name }}</td>
+        <td>
+            <a href="{% url 'player_app:player_info' uniform_number=player.uniform_number player_name=player.player_name %}">
+                個人ページ
+            </a>
+        </td>
+        <td>
+            <a href="{% url 'player_app:player_csv' uniform_number=player.uniform_number %}">ダウンロード</a>
+        </td>
+    </tr>
+    {% endfor %}
+</table>
+{% elif name %}
+    <p>「{{ name }}」に一致する選手は見つかりませんでした。</p>
+{% else %}
+    <p>検索ワードを入力してください。</p>
+{% endif %}
+
+<p><a href="{% url 'player_app:search'%}">TOPへ戻る</a></p>
+    </main>
+</body>
+
+</html>
+
+<style>
+
+table.status {
+    border-collapse: collapse; 
+    width: 100%;
+}
+
+table.status th,
+table.status td {
+    border: 1px solid black;   
+    padding: 5px;              
+    text-align: center;        
+}
+ 
+</style>

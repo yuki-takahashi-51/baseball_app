@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="ja">
+    <head>
+        <meta charset="UTF-8">
+        <title>Register_User</title>
+    </head>
+    <body>
+        <main>
+            <div class="card">
+            <h1>ユーザー登録画面</h1>
+            <form method="post">
+            {% csrf_token %}
+
+            <ul>
+                <li><label for="id_username">ユーザー名</label>
+                <input type="text" name="username" id="id_username" value="{{ form_register_user.username.value|default_if_none:'' }}"></li>
+                {% if form.username.errors %}
+                    <div class="error">{{ form.register_user.username.errors }}</div>
+                {% endif %}
+
+                <li><label for="id_password">パスワード</label>
+                <input type="password" name="password" id="id_password"></li>
+                {% if form.password.errors %}
+                    <div class="error">{{ form.register_user.password.errors }}</div>
+                {% endif %}
+
+                <li><label for="id_email">メールアドレス</label>
+                <input type="email" name="email" id="id_email" value="{{ form_register_user.email.value|default_if_none:'' }}"></li>
+                {% if form.email.errors %}
+                    <div class="error">{{ form.register_user.email.errors }}</div>
+                {% endif %}
+
+                <li><label for="id_nickname">ニックネーム</label>
+                <input type="text" name="nickname" id="id_nickname" value="{{ form_register_user.nickname.value|default_if_none:'' }}"></li>
+                {% if form.nickname.errors %}
+                    <div class="error">{{ form.register_user.nickname.errors }}</div>
+                {% endif %}
+            </ul>
+            {% csrf_token %}
+            <input type="submit" value="登録">
+            </form>            
+            </div>
+            <p><a href="{% url 'player_app:search'%}">TOPへ戻る</a></p>
+        </main>
+    </body>
+</html>
+
+<style>
+ul {
+    list-style-type: none;       
+}
+
+.card {
+    border: 1px solid #ccc;
+    padding: 15px;
+    margin: 10px 0;
+    border-radius: 8px;
+    box-shadow: 2px 2px 5px rgba(0,0,0,0.3);
+    background-color: #fff9efff;
+    }
+</style>

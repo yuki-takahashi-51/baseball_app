@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <title>選手一覧</title>
+</head>
+
+<h1>選手一覧</h1>
+<table class="status">
+    <tr>
+        <th>背番号</th>
+        <th>名前</th>
+        <th>詳細</th>
+        <th>CSV</th>
+    </tr>
+    {% for value in player %}
+    <tr>
+        <td>{{ value.uniform_number }}</td>
+        <td>{{ value.player_name }}</td>
+        <td>
+            <a href="{% url 'player_app:player_info' uniform_number=value.uniform_number player_name=value.player_name %}">
+                個人ページ
+            </a>
+        </td>
+        <td>
+            <a href="{% url 'player_app:player_csv' uniform_number=value.uniform_number %}">ダウンロード</a>
+        </td>
+    </tr>
+    {% endfor %}
+</table>
+<p><a href="{% url 'player_app:search'%}">TOPへ戻る</a></p>
+</html>
+
+<style>
+
+table.status {
+    border-collapse: collapse; 
+    width: 100%;
+}
+
+table.status th,
+table.status td {
+    border: 1px solid black;   
+    padding: 5px;              
+    text-align: center;        
+}
+ 
+</style>

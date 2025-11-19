@@ -1,0 +1,103 @@
+/*M!999999\- enable the sandbox mode */ 
+-- MariaDB dump 10.19  Distrib 10.11.14-MariaDB, for Linux (x86_64)
+--
+-- Host: localhost    Database: django_baseball_playerdb
+-- ------------------------------------------------------
+-- Server version	10.11.14-MariaDB
+
+/*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
+/*!40101 SET @OLD_CHARACTER_SET_RESULTS=@@CHARACTER_SET_RESULTS */;
+/*!40101 SET @OLD_COLLATION_CONNECTION=@@COLLATION_CONNECTION */;
+/*!40101 SET NAMES utf8mb4 */;
+/*!40103 SET @OLD_TIME_ZONE=@@TIME_ZONE */;
+/*!40103 SET TIME_ZONE='+00:00' */;
+/*!40014 SET @OLD_UNIQUE_CHECKS=@@UNIQUE_CHECKS, UNIQUE_CHECKS=0 */;
+/*!40014 SET @OLD_FOREIGN_KEY_CHECKS=@@FOREIGN_KEY_CHECKS, FOREIGN_KEY_CHECKS=0 */;
+/*!40101 SET @OLD_SQL_MODE=@@SQL_MODE, SQL_MODE='NO_AUTO_VALUE_ON_ZERO' */;
+/*!40111 SET @OLD_SQL_NOTES=@@SQL_NOTES, SQL_NOTES=0 */;
+
+--
+-- Table structure for table `batting_status`
+--
+
+DROP TABLE IF EXISTS `batting_status`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8mb4 */;
+CREATE TABLE `batting_status` (
+  `uniform_number` int(11) NOT NULL,
+  `games` int(11) DEFAULT NULL,
+  `numPlate` int(11) DEFAULT NULL,
+  `numBat` int(11) DEFAULT NULL,
+  `points` int(11) DEFAULT NULL,
+  `hits` int(11) DEFAULT NULL,
+  `hit2nd` int(11) DEFAULT NULL,
+  `hit3rd` int(11) DEFAULT NULL,
+  `homeruns` int(11) DEFAULT NULL,
+  `baseHits` int(11) DEFAULT NULL,
+  `getpoint` int(11) DEFAULT NULL,
+  `steal` int(11) DEFAULT NULL,
+  `missedSteal` int(11) DEFAULT NULL,
+  `bants` int(11) DEFAULT NULL,
+  `sacFry` int(11) DEFAULT NULL,
+  `fourballs` int(11) DEFAULT NULL,
+  `intWalk` int(11) DEFAULT NULL,
+  `deadballs` int(11) DEFAULT NULL,
+  `strikeOut` int(11) DEFAULT NULL,
+  `doublePlay` int(11) DEFAULT NULL,
+  `errors` int(11) DEFAULT NULL,
+  PRIMARY KEY (`uniform_number`),
+  CONSTRAINT `battingstatus_batter` FOREIGN KEY (`uniform_number`) REFERENCES `batter` (`uniform_number`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `batting_status`
+--
+
+LOCK TABLES `batting_status` WRITE;
+/*!40000 ALTER TABLE `batting_status` DISABLE KEYS */;
+INSERT INTO `batting_status` VALUES
+(0,93,283,252,35,60,10,1,2,78,19,10,4,7,3,19,0,2,52,4,7),
+(1,104,439,390,46,107,16,2,6,145,27,10,0,10,0,30,0,9,59,5,2),
+(2,93,391,364,48,101,24,0,16,173,49,3,4,0,1,16,0,10,76,6,6),
+(3,65,246,219,35,59,14,0,11,106,28,0,0,0,0,26,0,1,45,10,2),
+(4,85,296,265,24,63,10,2,6,95,25,0,1,4,2,24,0,1,36,5,1),
+(5,75,187,172,17,41,5,0,4,58,17,1,1,0,3,9,0,3,17,8,3),
+(6,28,75,72,4,11,0,1,0,13,4,0,2,0,1,2,0,0,16,1,5),
+(7,136,563,520,45,140,24,0,14,206,66,0,0,0,5,33,0,5,61,13,3),
+(8,61,23,22,5,8,1,2,0,13,2,2,0,0,0,1,0,0,6,0,0),
+(9,81,207,191,20,42,5,1,1,52,14,1,0,2,1,9,0,4,58,3,6),
+(10,43,97,92,5,22,4,0,2,32,6,0,0,1,2,2,0,0,14,5,1),
+(25,73,253,220,27,49,12,0,18,115,39,0,0,0,0,33,0,0,58,7,2),
+(26,90,177,158,22,33,8,0,0,41,10,22,8,1,1,17,0,0,32,1,7),
+(28,7,9,9,0,3,0,0,0,3,0,0,0,0,0,0,0,0,1,0,0),
+(29,6,9,9,0,0,0,0,0,0,0,0,0,0,0,0,0,0,4,0,0),
+(31,68,29,19,4,2,0,0,0,2,0,1,1,6,0,4,0,0,5,0,0),
+(32,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,0,NULL,NULL,NULL,NULL),
+(37,8,15,14,2,3,0,0,0,3,0,0,0,0,0,1,0,0,4,0,0),
+(44,71,151,134,15,31,9,0,2,46,15,2,2,2,0,14,0,1,41,2,3),
+(50,103,341,310,22,82,19,2,3,114,41,0,0,4,7,16,0,4,40,5,3),
+(51,95,352,321,25,89,16,1,6,125,39,0,0,0,2,28,0,1,42,14,8),
+(55,12,31,29,2,5,0,0,2,11,7,0,0,0,1,1,0,0,6,0,0),
+(56,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,0,NULL,NULL,NULL,NULL),
+(57,3,4,4,0,0,0,0,0,0,0,0,0,0,0,0,0,0,4,0,0),
+(58,61,170,163,21,40,9,1,2,57,10,6,3,0,1,4,0,2,51,1,1),
+(60,8,20,17,3,3,1,0,1,7,2,0,1,0,0,3,0,0,2,0,0),
+(61,113,391,339,51,96,20,1,7,139,39,5,4,4,7,30,0,11,67,5,2),
+(63,9,23,23,2,4,3,0,0,7,1,0,0,0,0,0,0,0,2,1,0),
+(66,42,89,80,8,20,4,0,2,30,6,0,0,0,1,6,0,2,8,3,0),
+(95,12,12,12,0,3,0,1,0,5,0,0,0,0,0,0,0,0,3,0,0),
+(99,23,46,41,1,8,1,0,0,9,1,0,0,0,0,5,0,0,13,0,1);
+/*!40000 ALTER TABLE `batting_status` ENABLE KEYS */;
+UNLOCK TABLES;
+/*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
+
+/*!40101 SET SQL_MODE=@OLD_SQL_MODE */;
+/*!40014 SET FOREIGN_KEY_CHECKS=@OLD_FOREIGN_KEY_CHECKS */;
+/*!40014 SET UNIQUE_CHECKS=@OLD_UNIQUE_CHECKS */;
+/*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
+/*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;
+/*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
+/*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
+
+-- Dump completed on 2025-10-01 15:48:31

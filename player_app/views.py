@@ -8,6 +8,7 @@ from django.http import HttpResponse
 from django.contrib.auth import login as auth_login, logout as auth_logout, authenticate
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
+import traceback
 
 
 def search(request):    #search.htmlを展開しformで定義したクラスを利用する
@@ -139,7 +140,7 @@ def player_csv(request, uniform_number):
         pitching.hold, pitching.hp, pitching.saves, pitching.ERA,
         pitching.fullIning, pitching.perfect, pitching.QS, pitching.batter,
         pitching.strikeOut, pitching.hit, pitching.homerun,
-        pitching.fourball, pitching.deadBall, pitching.int_Walk, pitching.noFour,
+        pitching.fourball, pitching.deadBall, pitching.intWalk, pitching.noFour,
         pitching.wildPitch, pitching.balk, pitching.lostScore, pitching.earnedRun
     ])
 
@@ -218,9 +219,9 @@ def register_original_batter(request):
                 uniform_number=cd["uniform_number"],
                 player_name=cd["player_name"],
                 position=cd["position"],
-                birthday=cd.get("birthday",0),
-                batting_hand=cd.get("batting_hand",0),
-                throwing_hand=cd.get("throwing_hand",0),
+                birthday=cd.get("birthday") or None,
+                batting_hand=cd.get("batting_hand") or None,
+                throwing_hand=cd.get("throwing_hand") or None,
                 games=cd.get("games",0),
                 numPlate=cd.get("numPlate",0),
                 numBat=cd.get("numBat",0),
@@ -243,53 +244,77 @@ def register_original_batter(request):
                 errors=cd.get("errors",0)
             )
             messages.success(request, "打者を登録しました。")
-            return redirect("player_app:search") #遷移先は適宜変更
+            return redirect("player_app:search")  # 遷移先は適宜変更
     else:
         form_register_batter = forms.Register_original_batter()
     return render(request, "register_original_batter.html", {"form": form_register_batter})
 
-@login_required
+@login_required #ピッチャー登録のデバックにすごい時間がかかったので名残として残しておきます
 def register_original_pitcher(request):
+    print("create_pitcher called with:", locals())
     if request.method == "POST":
         form_register_pitcher = forms.Register_original_pitcher(request.POST)
+        print(request.POST)
         if form_register_pitcher.is_valid():
+            print("create_pitcher called with:", locals())
+            print("Form is valid!", form_register_pitcher.cleaned_data)
             cd = form_register_pitcher.cleaned_data
-            setter["create_pitcher"](
-                user=request.user,
-                uniform_number=cd["uniform_number"],
-                player_name=cd["player_name"],
-                position=cd["position"],
-                birthday=cd.get("birthday",0),
-                batting_hand=cd.get("batting_hand",0),
-                throwing_hand=cd.get("throwing_hand",0),
-                games=cd.get("games",0),
-                win=cd.get("win",0),
-                lose=cd.get("lose",0),
-                saves=cd.get("saves",0),
-                hold=cd.get("hold",0),
-                hp=cd.get("hp",0),
-                fullIning=cd.get("fullIning",0),
-                perfect=cd.get("perfect",0),
-                noFour=cd.get("noFour",0),
-                batter=cd.get("batter",0),
-                ining=cd.get("ining",0),
-                hit=cd.get("hit",0),
-                homerun=cd.get("homerun",0),
-                fourball=cd.get("fourball",0),
-                int_Walk=cd.get("int_Walk",0),
-                deadBall=cd.get("deadBall",0),
-                strikeOut=cd.get("strikeOut",0),
-                wildPitch=cd.get("wildPitch",0),
-                balk=cd.get("balk",0),
-                lostScore=cd.get("lostScore",0),
-                earnedRun=cd.get("earnedRun",0),
-                ERA=cd.get("ERA",0),
-                QS=cd.get("QS",0)
-            )
-            messages.success(request, "投手を登録しました。")
-            return redirect("player_app:search") 
+            def safe_int(val):
+                try:
+                    return int(val)
+                except (TypeError, ValueError):
+                    return 0
+            def safe_float(val):
+                try:
+                    return float(val)
+                except (TypeError, ValueError):
+                    return 0.0
+            try:
+                pitcher = setter["create_pitcher"](
+                    user=request.user,
+                    uniform_number=cd["uniform_number"],
+                    player_name=cd["player_name"],
+                    position=cd["position"],
+                    birthday=cd.get("birthday") or None,
+                    batting_hand=cd.get("batting_hand") or None,
+                    throwing_hand=cd.get("throwing_hand") or None,
+                    games=safe_int(cd.get("games")),
+                    ERA=safe_float(cd.get("ERA")),
+                    win=safe_int(cd.get("win")),
+                    lose=safe_int(cd.get("lose")),
+                    saves=safe_int(cd.get("saves")),
+                    hold=safe_int(cd.get("hold")),
+                    hp=safe_int(cd.get("hp")),
+                    fullIning=safe_int(cd.get("fullIning")),
+                    perfect=safe_int(cd.get("perfect")),
+                    noFour=safe_int(cd.get("noFour")),
+                    batter=safe_int(cd.get("batter")),
+                    ining=safe_int(cd.get("ining")),
+                    hit=safe_int(cd.get("hit")),
+                    homerun=safe_int(cd.get("homerun")),
+                    fourball=safe_int(cd.get("fourball")),
+                    intWalk=safe_int(cd.get("intWalk")),
+                    deadBall=safe_int(cd.get("deadBall")),
+                    strikeOut=safe_int(cd.get("strikeOut")),
+                    wildPitch=safe_int(cd.get("wildPitch")),
+                    balk=safe_int(cd.get("balk")),
+                    lostScore=safe_int(cd.get("lostScore")),
+                    earnedRun=safe_int(cd.get("earnedRun")),
+                    QS=safe_int(cd.get("QS"))
+                )
+                print("pitcher created:", pitcher.id)
+                print(User_pitching_status.objects.filter(player=pitcher).exists())
+                messages.success(request, "投手を登録しました。")
+                return redirect("player_app:search") 
+            except Exception as e:
+                    print("pitcher creation failed:", e)
+                    traceback.print_exc()
+                    messages.error(request, f"登録に失敗しました: {e}")
+        else:
+            print("Form errors:", form_register_pitcher.errors)
     else:
         form_register_pitcher = forms.Register_original_pitcher()
+    print("Saved successfully")
     return render(request, "register_original_pitcher.html", {"form": form_register_pitcher})
 
 @login_required
@@ -312,7 +337,7 @@ def original_player_detail(request, uniform_number):
             batting = None
     else:
         try:
-            pitching = getter["user_pitchin"](player)
+            pitching = getter["user_pitching"](player)
         except User_pitching_status.DoesNotExist:
             pitching = None
 

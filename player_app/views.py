@@ -243,7 +243,7 @@ def register_original_batter(request):
                 errors=cd.get("errors",0)
             )
             messages.success(request, "打者を登録しました。")
-            return redirect("player_app:search")  # 遷移先は適宜変更
+            return redirect("player_app:search") #遷移先は適宜変更
     else:
         form_register_batter = forms.Register_original_batter()
     return render(request, "register_original_batter.html", {"form": form_register_batter})
@@ -293,14 +293,14 @@ def register_original_pitcher(request):
     return render(request, "register_original_pitcher.html", {"form": form_register_pitcher})
 
 @login_required
-def user_all_player(request):
+def original_all_player(request):
     batters = getter["user_batter"](request.user)
     pitchers = getter["user_pitcher"](request.user)
     players = list(batters) + list(pitchers)
     return render(request, "original_player_result.html", {"players": players})
 
 @login_required
-def user_player_detail(request, uniform_number):
+def original_player_detail(request, uniform_number):
     player, player_type = getter["user_player"](uniform_number, request.user)
     batting = None
     pitching = None

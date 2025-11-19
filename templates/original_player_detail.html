@@ -6,7 +6,6 @@
 </head>
 
 <body>
-
     <main>
     <div class="card">
     <h2>選手詳細</h2>
@@ -73,18 +72,90 @@
         <tr>
             <th>指標名</th><th>数値</th><th>説明</th><th>計算式</th><th>優秀</th><th>非常に優秀</th>
         </tr>
-        {% for key, value in metrics.items %}
         <tr>
-            <td>{{ key }}</td>
-            <td>{{ value }}</td>
-            <td><!-- 説明は必要に応じて補足 --></td>
-            <td><!-- 計算式 --></td>
-            <td></td>
-            <td></td>
+            <td>打率 (AVG)</td>
+            <td>{{ metrics.AVG }}</td>
+            <td>打者が打席でヒットを打つ確率。高いほど良い。</td>
+            <td>安打 ÷ 打数</td>
+            <td>.270</td>
+            <td>.290</td>
         </tr>
-        {% endfor %}
+        <tr>
+            <td>出塁率 (OBP)</td>
+            <td>{{ metrics.OBP }}</td>
+            <td>打者が出塁できる確率（ヒット・四球・死球を含む）。高いほど良い。</td>
+            <td>(安打 + 四球 + 死球) ÷ 打席</td>
+            <td>.330</td>
+            <td>.390</td>
+        </tr>
+        <tr>
+            <td>長打率 (SLG)</td>
+            <td>{{ metrics.SLG }}</td>
+            <td>打者の長打力を示す指標。高いほど良い。</td>
+            <td>(単打 + 2×二塁打 + 3×三塁打 + 4×本塁打) ÷ 打数</td>
+            <td>.450</td>
+            <td>.550</td>
+        </tr>
+        <tr>
+            <td>OPS</td>
+            <td>{{ metrics.OPS }}</td>
+            <td>出塁率と長打率を合計した総合打撃力。高いほど良い。</td>
+            <td>OBP + SLG</td>
+            <td>.730</td>
+            <td>1.000</td>
+        </tr>
+        <tr>
+            <td>純長打率 (IsoP)</td>
+            <td>{{ metrics.IsoP }}</td>
+            <td>純粋な長打の割合（単打の影響を除く）。高いほど良い。</td>
+            <td>SLG - AVG</td>
+            <td>.150</td>
+            <td>.250</td>
+        </tr>
+        <tr>
+            <td>三振率 (SO%)</td>
+            <td>{{ metrics.SO_percent }}</td>
+            <td>打席に対する三振の割合。低いほど良い。</td>
+            <td>三振 ÷ 打席</td>
+            <td>.150</td>
+            <td>.100</td>
+        </tr>
+        <tr>
+            <td>四球率 (BB%)</td>
+            <td>{{ metrics.BB_percent }}</td>
+            <td>打席に対する四球の割合。高いほど良い。</td>
+            <td>四球 ÷ 打席</td>
+            <td>.120</td>
+            <td>.150</td>
+        </tr>
+        <tr>
+            <td>四球/三振 (BB/SO)</td>
+            <td>{{ metrics.BB_per_SO }}</td>
+            <td>三振数と四球数の比率。高いほど良い。</td>
+            <td>四球 ÷ 三振</td>
+            <td>1.30</td>
+            <td>1.50</td>
+        </tr>
+        <tr>
+            <td>得点効率 (R/PA)</td>
+            <td>{{ metrics.R_per_PA }}</td>
+            <td>打席あたりの得点期待値。高いほど良い。</td>
+            <td>得点 ÷ 打席</td>
+            <td>.150</td>
+            <td>.180</td>
+        </tr>
+        <tr>
+            <td>打点効率 (RBI/PA)</td>
+            <td>{{ metrics.RBI_per_PA }}</td>
+            <td>打席あたりの打点期待値。高いほど良い。</td>
+            <td>打点 ÷ 打席</td>
+            <td>.120</td>
+            <td>.150</td>
+        </tr>
     </table>
     </div>
+
+
     {% endif %}
 
     {% if pitching %}
@@ -131,25 +202,78 @@
         <tr>
             <th>指標名</th><th>数値</th><th>説明</th><th>計算式</th><th>優秀</th><th>非常に優秀</th>
         </tr>
-        {% for key, value in metrics.items %}
         <tr>
-            <td>{{ key }}</td>
-            <td>{{ value }}</td>
-            <td><!-- 説明は必要に応じて補足 --></td>
-            <td><!-- 計算式 --></td>
+            <td>勝率 (Win%)</td>
+            <td>{{ metrics.win_percent }}</td>
+            <td>責任投手になった試合における勝利確率。高いほど良い。</td>
+            <td>勝利 ÷ (勝利 + 敗北)</td>
             <td></td>
             <td></td>
         </tr>
-        {% endfor %}
+        <tr>
+            <td>K/9</td>
+            <td>{{ metrics.K_per_9 }}</td>
+            <td>9イニングあたりの奪三振数。高いほど良い。</td>
+            <td>三振 × 9 ÷ 投球回</td>
+            <td>9.5</td>
+            <td>10.5</td>
+        </tr>
+        <tr>
+            <td>BB/9</td>
+            <td>{{ metrics.BB_per_9 }}</td>
+            <td>9イニングあたりの与四球数。低いほど良い。</td>
+            <td>四球 × 9 ÷ 投球回</td>
+            <td>2.25</td>
+            <td>1.5</td>
+        </tr>
+        <tr>
+            <td>K/BB</td>
+            <td>{{ metrics.K_per_BB }}</td>
+            <td>奪三振と与四球数の比率。高いほど良い。</td>
+            <td>三振 ÷ 四球</td>
+            <td>4.0</td>
+            <td>5.0</td>
+        </tr>
+        <tr>
+            <td>与四死球率 (BB+HBP/9)</td>
+            <td>{{ metrics.BB_plus_HBP_per_9 }}</td>
+            <td>9イニングあたりの与四球と与死球の合計。低いほど良い。</td>
+            <td>(四球 + 死球) × 9 ÷ 投球回</td>
+            <td>2.5</td>
+            <td>1.75</td>
+        </tr>
+        <tr>
+            <td>被打率 (BAA)</td>
+            <td>{{ metrics.BAA }}</td>
+            <td>打者に安打を許した割合。低いほど良い。</td>
+            <td>被安打 ÷ 対戦打者数</td>
+            <td>.240</td>
+            <td>.200</td>
+        </tr>
+        <tr>
+            <td>HR/9</td>
+            <td>{{ metrics.HR_per_9 }}</td>
+            <td>9イニングあたりの被本塁打数。低いほど良い。</td>
+            <td>被本塁打 × 9 ÷ 投球回</td>
+            <td>1.5</td>
+            <td>0.2</td>
+        </tr>
+        <tr>
+            <td>WHIP</td>
+            <td>{{ metrics.WHIP }}</td>
+            <td>1イニングあたりの平均走者数（四球+被安打）。低いほど良い。</td>
+            <td>(四球 + 被安打) ÷ 投球回</td>
+            <td>1.10</td>
+            <td>1.00</td>
+        </tr>
     </table>
     </div>
     {% endif %}
 
-    <p><a href="{% url 'player_app:user_all_player'%}">TOPへ戻る</a></p>
+    <p><a href="{% url 'player_app:search'%}">TOPへ戻る</a></p>
     </main>
 </body>
 </html>
-
 <style>
 ul {
     list-style-type: none;       
@@ -188,4 +312,5 @@ table.status_small td {
     box-shadow: 2px 2px 5px rgba(0,0,0,0.3);
     background-color: #fffaf2ff;
     }
+    
 </style>

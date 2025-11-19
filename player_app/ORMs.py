@@ -161,7 +161,7 @@ class setter:
         hit=0,
         homerun=0,
         fourball=0,
-        int_Walk=0,
+        intWalk=0,
         deadBall=0,
         strikeOut=0,
         wildPitch=0,
@@ -184,7 +184,7 @@ class setter:
         if any(v is not None for v in [
             games, win, lose, saves, hold, hp,
             fullIning, perfect, noFour, batter, ining,
-            hit, homerun, fourball, int_Walk, deadBall,
+            hit, homerun, fourball, intWalk, deadBall,
             strikeOut, wildPitch, balk, lostScore,
             earnedRun, ERA, QS
         ]):
@@ -204,7 +204,7 @@ class setter:
                 hit=hit,
                 homerun=homerun,
                 fourball=fourball,
-                int_Walk=int_Walk,
+                intWalk=intWalk,
                 deadBall=deadBall,
                 strikeOut=strikeOut,
                 wildPitch=wildPitch,

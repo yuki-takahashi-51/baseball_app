@@ -16,6 +16,6 @@ urlpatterns = [
     path("login", views.login, name = "login"),
     path("register_original_batter/", views.register_original_batter, name = "register_original_batter"),
     path("register_original_pitcher/", views.register_original_pitcher, name = "register_original_pitcher"),
-    path("original_player_result", views.user_all_player, name = "original_player_result"),
-    path("original_player_detail", views.user_player_detail, name = "original_player_detail.html")
+    path("original_all_result", views.original_all_player, name = "original_all_player"),
+    path("<int:uniform_number>/_more_detail", views.original_player_detail, name = "original_player_detail")
 ]

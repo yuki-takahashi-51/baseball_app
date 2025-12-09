@@ -11,12 +11,11 @@ from django.contrib import messages
 import traceback
 
 
-def search(request):    #search.htmlを展開しformで定義したクラスを利用する
+def search(request):    #検索画面
     form_search = forms.Search_player()
     return render(request, "search.html", {"form":form_search})
 
-def result(request):    #POSTデータが送信されてきたらORMSで定義したゲッターを実行する
-    #取得した選手情報(背番号)をresult.htmlに渡しながら展開する　POSTがなかった時に空値を返すのは何も送信されなかった時の処理を実行するため
+def result(request):    #検索結果表示　
     name = ""
     players = []
     if request.method == "POST":
@@ -25,8 +24,7 @@ def result(request):    #POSTデータが送信されてきたらORMSで定義�
         text = {"name": name, "players": players}
     return render(request, "result.html", text)
 
-#背番号をもとに情報を入手し打者であったら打撃成績を、投手であったら投球成績を取得する　
-# 最初デフォルトで空にしているのはどちらも片方のデータしか持っておらず両方取得するのは不可能だから
+#背番号から選手個人の情報を引き出す　nameはバーに表示するのに必要だったため
 def player_detail(request, uniform_number, player_name):
     player, player_type = getter["player"](uniform_number)
     batting = None
@@ -48,7 +46,7 @@ def player_detail(request, uniform_number, player_name):
     text = {"player": player, "batting": batting, "pitching": pitching}
     return render(request, "player.html", text)
 
-#ほぼ先ほどと一緒
+#詳細情報取得
 def player_moreinfo(request, uniform_number):
     player, player_type = getter["player"](uniform_number)
     batting = None
@@ -66,12 +64,13 @@ def player_moreinfo(request, uniform_number):
         except Pitching_status.DoesNotExist:
             pitching = None
             batting = None
-    #打撃成績があれば打者の指標計算用関数を取得する　そうでない、つまり投球成績を持っていれば投手用の関数を取得
+    #指標計算用の関数を取得
     metrics = batter_metrics(batting) if batting else pitcher_metrics(pitching)      
     
     text = {"player": player, "batting": batting, "pitching": pitching, "metrics":metrics}
     return render(request, "player_detail.html", text)
 
+#選手データをCSVでダウンロード
 def player_csv(request, uniform_number):
     player, player_type = getter["player"](uniform_number)
     batting = None
@@ -89,19 +88,15 @@ def player_csv(request, uniform_number):
         except Pitching_status.DoesNotExist:
             pitching = None
             batting = None
-            #ここまではほぼ一緒
 
     response = HttpResponse(content_type="text/csv")
-    #csv形式のテキストを返す
     response["Content-Disposition"] = f'attachment; filename="{player.player_name}_stats.csv"'
-    #ダウンロード用だと明示し選手ごとにファイルに名前を付ける
 
     response.write('\ufeff')
-    #このファイルがutf8であると指定する　ない場合文字化けの可能性がある
+    #utf8指定　保険
     writer = csv.writer(response)
-    #これまでの定義をもとにcsvのモジュールで記述するため変数に格納する
-
-    #基本情報は全員持っているためここで順に並べる
+   
+    #基本情報
     writer.writerow(["背番号", "氏名", "生年月日", "ポジション", "利き手"])
     writer.writerow([
         player.uniform_number,
@@ -112,7 +107,6 @@ def player_csv(request, uniform_number):
     ])
     writer.writerow([])
 
-    #打撃成績があるか投球成績があるか判断し打撃成績と打撃指標、または投球成績と投球指標を記述
     if batting:
         metrics_bat = batter_metrics(batting)
         writer.writerow(["打撃成績"])
@@ -149,7 +143,6 @@ def player_csv(request, uniform_number):
         for key, value in metrics_pitch.items():
             writer.writerow([key, value])
         writer.writerow([])
-    #記述が住んだものを代入　送信
     return response
 
 #全選手情報取得
@@ -202,12 +195,12 @@ def login(request):
                 return redirect("player_app:search")
             else:
                 form_login.add_error(None, "メールアドレスまたはパスワードが違います。")
-    else: #GETだった場合
+    else: 
         form_login = forms.Login()
 
     return render(request, "login.html", {"form_login": form_login})
 
-
+#オリジナル打者登録
 @login_required
 def register_original_batter(request):
     if request.method == "POST":
@@ -244,12 +237,13 @@ def register_original_batter(request):
                 errors=cd.get("errors",0)
             )
             messages.success(request, "打者を登録しました。")
-            return redirect("player_app:search")  # 遷移先は適宜変更
+            return redirect("player_app:search") 
     else:
         form_register_batter = forms.Register_original_batter()
     return render(request, "register_original_batter.html", {"form": form_register_batter})
 
-@login_required #ピッチャー登録のデバックにすごい時間がかかったので名残として残しておきます
+#オリジナル投手登録　デバックの跡は見返しのため残す
+@login_required 
 def register_original_pitcher(request):
     print("create_pitcher called with:", locals())
     if request.method == "POST":
@@ -317,12 +311,14 @@ def register_original_pitcher(request):
     print("Saved successfully")
     return render(request, "register_original_pitcher.html", {"form": form_register_pitcher})
 
+#オリジナル選手全件取得
 @login_required
 def original_all_player(request):
     batters = getter["user_batter"](request.user)
     pitchers = getter["user_pitcher"](request.user)
     players = list(batters) + list(pitchers)
     return render(request, "original_player_result.html", {"players": players})
+
 
 @login_required
 def original_player_detail(request, uniform_number):
@@ -341,7 +337,6 @@ def original_player_detail(request, uniform_number):
         except User_pitching_status.DoesNotExist:
             pitching = None
 
-    #計算関数を利用
     metrics = batter_metrics(batting) if batting else pitcher_metrics(pitching)
 
     context = {
@@ -351,3 +346,4 @@ def original_player_detail(request, uniform_number):
         "metrics": metrics
     }
     return render(request, "original_player_detail.html", context)
+

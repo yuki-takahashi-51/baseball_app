@@ -3,7 +3,7 @@ from django.db import models
 from django.conf import settings
 from django.core.exceptions import ValidationError
 
-#ユーザー登録のための関数 メールアドレスとパスワードで認証するためメールを必須にしている　ベースは既に用意してあるもの
+#ユーザー登録　メール必須
 class CustomUserManager(BaseUserManager):
     def create_user(this, email: str, password=None, username=None, first_name=None):
         if not email:
@@ -15,12 +15,12 @@ class CustomUserManager(BaseUserManager):
             username=username,
             first_name=first_name,
         )
-        user.set_password(password)   #パスワードを受け取った後セキュリティのためハッシュ化
+        user.set_password(password)   #ハッシュ化
         user.save() #userを更新
         return user
 
 
-#Auth_userに相当するもの　元あるものを基盤としつつ定義を追加　player_countは新しく追加したもの
+#User定義
 class User(AbstractBaseUser, PermissionsMixin):
     user_id = models.AutoField(primary_key=True)
     username = models.CharField(max_length=150, unique=True)
@@ -32,26 +32,26 @@ class User(AbstractBaseUser, PermissionsMixin):
     date_joined = models.DateTimeField(auto_now_add=True)
     player_count = models.IntegerField(null=True)
 
-    USERNAME_FIELD = "email"    #メールアドレスを認証に使いたいため認証のデフォをユーザ名から変更
-    REQUIRED_FIELDS = ["username"]  #スーパーユーザー作成メソッドはないが念のため必要項目を定義
+    USERNAME_FIELD = "email"    #メールアドレス認証のため
+    REQUIRED_FIELDS = ["username"]
     
     objects = CustomUserManager() 
 
     class Meta:
-        db_table = "user"   #テーブル名をuserとする
+        db_table = "user"  
  
         
 
-#ここからは自作テーブル　抽象クラスを使用し野球選手として必要な情報を基底側に定義し派生側で野手投手に分ける
-#ORMだけを使用するためmodelsにも全く同じ定義を記述
+
+#選手用
 class PlayerBase(models.Model):
-    uniform_number = models.IntegerField(primary_key=True)  #これが全体を通して選手を識別する値となる
-    player_name = models.CharField(max_length=50)   #背番号をつける人が変わったら意味がないが自動生成を主キーとしたら時間がとてもかかりそうだったため
+    uniform_number = models.IntegerField(primary_key=True) 
+    player_name = models.CharField(max_length=50)   
     birthday = models.DateField(null=True, blank=True)
     position = models.CharField(max_length=2)
 
     class Meta:
-        abstract = True #   ここで抽象クラス宣言 テーブルは作成されない
+        abstract = True 
 
 class Batter(PlayerBase):
     batting_hand = models.CharField(max_length=1)
@@ -59,9 +59,8 @@ class Batter(PlayerBase):
     
     class Meta:
         db_table = "batter"
-        managed = False #こうすることでmigrationは作成されない RunSQLで定義してあることが前提
+        managed = False #SQLの学習のためmigrationsは一部自分で記述
 
-#結局のところカラムは変わらないがテーブルが違うことがのちに大切なため必要
 class Pitcher(PlayerBase):
     throwing_hand = models.CharField(max_length=1)
     batting_hand = models.CharField(max_length=1)
@@ -71,8 +70,8 @@ class Pitcher(PlayerBase):
         managed = False
 
 
-class Batting_status(models.Model):  #batterだけがこのテーブルと背番号で接続　管理しやすいようにすべての
-    uniform_number = models.OneToOneField(  #野球関連テーブルは背番号で管理　子の定義から消さねば勝手に親が消えないように定義
+class Batting_status(models.Model): 
+    uniform_number = models.OneToOneField( 
         Batter,
         db_column="uniform_number",
         on_delete=models.PROTECT,
@@ -106,7 +105,7 @@ class Batting_status(models.Model):  #batterだけがこのテーブルと背番
 
 
 class Pitching_status(models.Model):    
-    uniform_number = models.OneToOneField(  #これも上と同様pitcherとだけ接続
+    uniform_number = models.OneToOneField( 
         Pitcher,
         db_column="uniform_number",
         on_delete=models.PROTECT,
@@ -143,7 +142,7 @@ class Pitching_status(models.Model):
         
 
 
-#ユーザー用のオリジナル選手
+#オリジナル選手
 
 class User_player(models.Model):
     user = models.ForeignKey(
@@ -171,7 +170,7 @@ class User_batter(User_player):
 
     class Meta:
         db_table = "user_batter"
-        #同一ユーザー内での背番号の一意性を保証
+        #同一ユーザー内での背番号の一意性を保つ
         unique_together = (("user", "uniform_number"),)
         indexes = [
             models.Index(fields=["user", "uniform_number"]),
@@ -185,10 +184,9 @@ class User_batter(User_player):
                        homeruns, baseHits, getpoint, steal, missedSteal, bants,
                        sacFry, fourballs, intWalk, deadballs, strikeOut, doublePlay, errors,
                        birthday=None, position=None, batting_hand=None, throwing_hand=None):
-        #背番号の重複確認
+        #重複確認
         if cls.objects.filter(user=user, uniform_number=uniform_number).exists():
             raise ValidationError(f"背番号 {uniform_number} は既に使用されています。")
-        #名前の重複確認
         if cls.objects.filter(user=user, player_name=player_name).exists():
             raise ValidationError(f"選手名 {player_name} は既に存在します。")
 
@@ -349,3 +347,4 @@ class User_pitching_status(models.Model):
     class Meta:
         db_table = "user_pitching_status"
         managed = False
+

@@ -1,9 +1,17 @@
-#打者と投手の指標計算のための関数をまとめたもの
+#指標計算のための関数
+
+
+DOUBLE = 2
+TRIPLE = 3
+HOMERUN = 4
+NINE_INNINGS = 9
+DECIMAL_PLACES = 3
+
 
 def batter_metrics(batting):
     if not batting:
         return {}
-    
+#成績
     plate = batting.numPlate
     bat = batting.numBat
     H = batting.hits
@@ -15,24 +23,42 @@ def batter_metrics(batting):
     four = batting.fourballs
     dead = batting.deadballs
     K = batting.strikeOut
-    
+
+    #長打関係
+    singles = H - double - triple - HR
+    total_bases = (
+        singles * 1 +
+        double * DOUBLE +
+        triple * TRIPLE +
+        HR * HOMERUN
+    )
+
+    #指標計算
+    AVG = round(H / bat, DECIMAL_PLACES) if bat else 0
+    OBP = round((H + four + dead) / plate, DECIMAL_PLACES) if plate else 0
+    SLG = round(total_bases / bat, DECIMAL_PLACES) if bat else 0
+    OPS = round(OBP + SLG, DECIMAL_PLACES) if bat else 0
+    IsoP = round(SLG - AVG, DECIMAL_PLACES) if bat else 0
+
     return {
-        "AVG":round(H/bat,3)if bat else 0,#打率
-        "OBP":round((H+four+dead)/plate,3)if plate else 0,#出塁率
-        "SLG":round(((H-double-triple-HR)+double*2+triple*3+HR*4)/bat,3)if bat else 0,#長打率
-        "OPS":round(((H+four+dead)/plate)+(((H-double-triple-HR)+double*2+triple*3+HR*4)/bat),3)if bat else 0,#OPS
-        "IsoP":round((((H-double-triple-HR)+double*2+triple*3+HR*4)/bat)-(H/bat),3)if bat else 0,#純長打率
-        "SO_percent":round(K/plate,3)if plate else 0,#三振率
-        "BB_percent":round(four/plate,3)if plate else 0,#四球率
-        "BB_per_SO":round(four/K,3)if four else 0,#四球/三振比
-        "R_per_PA":round(point/plate,3)if plate else 0,#打席あたりの得点
-        "RBI_per_PA":round(RBI/plate,3)if plate else 0 #打席あたりの打点
+        "AVG": AVG,
+        "OBP": OBP,
+        "SLG": SLG,
+        "OPS": OPS,
+        "IsoP": IsoP,
+        "SO_percent": round(K / plate, DECIMAL_PLACES) if plate else 0,
+        "BB_percent": round(four / plate, DECIMAL_PLACES) if plate else 0,
+        "BB_per_SO": round(four / K, DECIMAL_PLACES) if four else 0,
+        "R_per_PA": round(point / plate, DECIMAL_PLACES) if plate else 0,
+        "RBI_per_PA": round(RBI / plate, DECIMAL_PLACES) if plate else 0,
     }
-    
+
+
 def pitcher_metrics(pitching):
     if not pitching:
-        return{}
-    
+        return {}
+
+    #成績
     win = pitching.win
     lose = pitching.lose
     QS = pitching.QS
@@ -45,15 +71,15 @@ def pitcher_metrics(pitching):
     HR = pitching.homerun
     batter = pitching.batter
     ERA = pitching.ERA
-    
+
     return {
-        "win_percent":round(win/(win+lose),3)if (win+lose) else 0,#勝率
-        "K_per_9":round(K*9/ining,3)if ining else 0,#9回あたりの奪三振数
-        "BB_per_9":round(four*9/ining,3)if ining else 0,#9回あたりの与四球数
-        "K_per_BB":round(K/four,3)if four else 0,#三振/四球比
-        "BB_plus_HBP_per_9":round((four+dead)*9/ining,3)if ining else 0,#9回あたりの与死四球
-        "BAA":round(H/batter,3)if batter else 0,#打者に安打を許した確率
-        "HR_per_9":round(HR*9/ining,3)if ining else 0,#9回ごとの被本塁打
-        "H_per_9":round(H*9/ining,3)if ining else 0,#9回ごとの被安打
-        "WHIP":round((four+H)/ining,3)if ining else 0,#1イニングあたりの平均走者数
+        "win_percent": round(win / (win + lose), DECIMAL_PLACES) if (win + lose) else 0,
+        "K_per_9": round(K * NINE_INNINGS / ining, DECIMAL_PLACES) if ining else 0,
+        "BB_per_9": round(four * NINE_INNINGS / ining, DECIMAL_PLACES) if ining else 0,
+        "K_per_BB": round(K / four, DECIMAL_PLACES) if four else 0,
+        "BB_plus_HBP_per_9": round((four + dead) * NINE_INNINGS / ining, DECIMAL_PLACES) if ining else 0,
+        "BAA": round(H / batter, DECIMAL_PLACES) if batter else 0,
+        "HR_per_9": round(HR * NINE_INNINGS / ining, DECIMAL_PLACES) if ining else 0,
+        "H_per_9": round(H * NINE_INNINGS / ining, DECIMAL_PLACES) if ining else 0,
+        "WHIP": round((four + H) / ining, DECIMAL_PLACES) if ining else 0,
     }

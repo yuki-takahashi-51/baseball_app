@@ -5,54 +5,54 @@ from django.shortcuts import get_object_or_404
 class getter:
     
     @staticmethod
-    def get_allplayer():    #選手情報を全件取得
+    def get_allplayer():    #選手全件取得
         batters = Batter.objects.all()
         pitchers = Pitcher.objects.all()
         return list(batters)+list(pitchers)
     
     @staticmethod
-    def get_playersresult(name: str):    #batterもしくはpitcherに格納されている、名前が入力された値を含んでいる選手を取得する
+    def get_playersresult(name: str):    #名前で選手取得
         batters = Batter.objects.filter(player_name__contains=name) if name else []
         pitchers = Pitcher.objects.filter(player_name__contains=name) if name else []
         return list(batters)+list(pitchers)
         
     @staticmethod
-    def get_player(uniform_number: int):
-        try:    #batterテーブルから引数で渡された背番号と一致する選手を取得する
+    def get_player(uniform_number: int):    #背番号で選手取得
+        try:  
             return Batter.objects.get(uniform_number=uniform_number), "batter"
         except Batter.DoesNotExist:
             return get_object_or_404(Pitcher, uniform_number=uniform_number), "pitcher"
-     #存在しなければpitcherテーブルに同様の処理をし見つからなければ404を返す
+
      
     @staticmethod   
-    def get_player_batting(uniform_number: int):
+    def get_player_batting(uniform_number: int):    #打撃成績取得
         return Batting_status.objects.get(uniform_number=uniform_number)
     
     @staticmethod    
-    def get_player_pitching(uniformnumber: int):
+    def get_player_pitching(uniformnumber: int):    #投球成績取得
         return Pitching_status.objects.get(uniform_number=uniformnumber)
 
     @staticmethod
-    def get_user_batters(user: User):
+    def get_user_batters(user: User):    #オリジナル打者取得
         return User_batter.objects.filter(user=user)
 
     @staticmethod
-    def get_user_pitchers(user: User):
+    def get_user_pitchers(user: User):    #オリジナル投手取得
         return User_pitcher.objects.filter(user=user)
 
-    @staticmethod #背番号取得
-    def get_user_player(uniform_number: int, user: User):
+    @staticmethod 
+    def get_user_player(uniform_number: int, user: User):    #オリジナル選手全取得
         try:
             return User_batter.objects.get(user=user, uniform_number=uniform_number), "batter"
         except User_batter.DoesNotExist:
             return get_object_or_404(User_pitcher, user=user, uniform_number=uniform_number), "pitcher"
 
     @staticmethod
-    def get_user_player_batting(player: User_batter):
+    def get_user_player_batting(player: User_batter):    #オリジナル打撃成績取得
         return get_object_or_404(User_batting_status, player=player)
 
     @staticmethod
-    def get_user_player_pitching(player: User_pitcher):
+    def get_user_player_pitching(player: User_pitcher):    #オリジナル投球成績取得
         return get_object_or_404(User_pitching_status, player=player)
     
 class setter:
@@ -215,3 +215,4 @@ class setter:
                 QS=QS
             )
         return pitcher
+

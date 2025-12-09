@@ -1,17 +1,19 @@
 from django import forms
 
-#ここで検索用の名前入力を受け取る　自動バリデーションのため定義も最低限合わせる
+#自動バリデーションのため定義を合わせる
+
+#選手検索
 class Search_player:
     name = forms.CharField()
     
-#ユーザー登録用フォーム
+#ユーザー登録
 class Register_user(forms.Form):
     username = forms.CharField(label="ユーザー名")
     password = forms.CharField(label="パスワード", widget=forms.PasswordInput)
     email = forms.EmailField(label="メールアドレス")
     first_name = forms.CharField(required=False, label="ニックネーム")
     
-#ログイン用フォーム
+#ログイン用
 class Login(forms.Form):
     email = forms.EmailField(label="メールアドレス")
     password = forms.CharField(label="パスワード", widget=forms.PasswordInput)
@@ -76,3 +78,4 @@ class Register_original_pitcher(forms.Form):
     QS = forms.IntegerField(label="QS")
     batting_hand = forms.CharField(required=False, label="打ち手", max_length=1)
     throwing_hand = forms.CharField(required=False, label="投げ手", max_length=1)
+

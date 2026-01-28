@@ -99,35 +99,29 @@ def create_batter(
         batting_hand=batting_hand,
         throwing_hand=throwing_hand
     )
-
-    if any(v is not None for v in [
-        games, numPlate, numBat, points, hits, hit2nd, hit3rd,
-        homeruns, baseHits, getpoint, steal, missedSteal, bants,
-        sacFry, fourballs, intWalk, deadballs, strikeOut, doublePlay, errors
-    ]):
-        User_batting_status.objects.create(
-            player=batter,
-            games=games,
-            numPlate=numPlate,
-            numBat=numBat,
-            points=points,
-            hits=hits,
-            hit2nd=hit2nd,
-            hit3rd=hit3rd,
-            homeruns=homeruns,
-            baseHits=baseHits,
-            getpoint=getpoint,
-            steal=steal,
-            missedSteal=missedSteal,
-            bants=bants,
-            sacFry=sacFry,
-            fourballs=fourballs,
-            intWalk=intWalk,
-            deadballs=deadballs,
-            strikeOut=strikeOut,
-            doublePlay=doublePlay,
-            errors=errors
-        )
+    User_batting_status.objects.create(
+        player=batter,
+        games=games,
+        numPlate=numPlate,
+        numBat=numBat,
+        points=points,
+        hits=hits,
+        hit2nd=hit2nd,
+        hit3rd=hit3rd,
+        homeruns=homeruns,
+        baseHits=baseHits,
+        getpoint=getpoint,
+        steal=steal,
+        missedSteal=missedSteal,
+        bants=bants,
+        sacFry=sacFry,
+        fourballs=fourballs,
+        intWalk=intWalk,
+        deadballs=deadballs,
+        strikeOut=strikeOut,
+        doublePlay=doublePlay,
+        errors=errors
+    )
     return batter
 
 #投手登録
@@ -172,39 +166,30 @@ def create_pitcher(
         batting_hand=batting_hand,
         throwing_hand=throwing_hand,
     )
-
-    if any(v is not None for v in [
-        games, win, lose, saves, hold, hp,
-        fullIning, perfect, noFour, batter, ining,
-        hit, homerun, fourball, intWalk, deadBall,
-        strikeOut, wildPitch, balk, lostScore,
-        earnedRun, ERA, QS
-    ]):
-        User_pitching_status.objects.create(
-            player=pitcher,
-            games=games,
-            win=win,
-            lose=lose,
-            saves=saves,
-            hold=hold,
-            hp=hp,
-            fullIning=fullIning,
-            perfect=perfect,
-            noFour=noFour,
-            batter=batter,
-            ining=ining,
-            hit=hit,
-            homerun=homerun,
-            fourball=fourball,
-            intWalk=intWalk,
-            deadBall=deadBall,
-            strikeOut=strikeOut,
-            wildPitch=wildPitch,
-            balk=balk,
-            lostScore=lostScore,
-            earnedRun=earnedRun,
-            ERA=ERA,
-            QS=QS
-        )
+    User_pitching_status.objects.create(
+        player=pitcher,
+        games=games,
+        win=win,
+        lose=lose,
+        saves=saves,
+        hold=hold,
+        hp=hp,
+        fullIning=fullIning,
+        perfect=perfect,
+        noFour=noFour,
+        batter=batter,
+        ining=ining,
+        hit=hit,
+        homerun=homerun,
+        fourball=fourball,
+        intWalk=intWalk,
+        deadBall=deadBall,
+        strikeOut=strikeOut,
+        wildPitch=wildPitch,
+        balk=balk,
+        lostScore=lostScore,
+        earnedRun=earnedRun,
+        ERA=ERA,
+        QS=QS
+    )
     return pitcher
-

@@ -1,5 +1,4 @@
 from .models import User, Batter, Pitcher, Batting_status, Pitching_status, User_batter, User_pitcher, User_batting_status, User_pitching_status
-from django.shortcuts import get_object_or_404
 
 def get_allplayer():    #選手全件取得
     batters = Batter.objects.all()
@@ -12,17 +11,22 @@ def get_playersresult(name: str):    #名前で選手取得
     return list(batters)+list(pitchers)
     
 def get_player(uniform_number: int):    #背番号で選手取得
-    try:  
-        return Batter.objects.get(uniform_number=uniform_number), "batter"
-    except Batter.DoesNotExist:
-        return get_object_or_404(Pitcher, uniform_number=uniform_number), "pitcher"
+    batter = Batter.objects.filter(uniform_number=uniform_number).first()
+    if batter:
+        return batter, "batter"
+
+    pitcher = Pitcher.objects.filter(uniform_number=uniform_number).first()
+    if pitcher:
+        return pitcher, "pitcher"
+
+    return None, None
 
   
 def get_player_batting(uniform_number: int):    #打撃成績取得
-    return Batting_status.objects.get(uniform_number=uniform_number)
+    return Batting_status.objects.filter(uniform_number=uniform_number)
 
-def get_player_pitching(uniformnumber: int):    #投球成績取得
-    return Pitching_status.objects.get(uniform_number=uniformnumber)
+def get_player_pitching(uniform_number: int):    #投球成績取得
+    return Pitching_status.objects.filter(uniform_number=uniformnumber)
 
 def get_user_batters(user: User):    #オリジナル打者取得
     return User_batter.objects.filter(user=user)
@@ -31,20 +35,25 @@ def get_user_pitchers(user: User):    #オリジナル投手取得
     return User_pitcher.objects.filter(user=user)
 
 def get_user_player(uniform_number: int, user: User):    #オリジナル選手全取得
-    try:
-        return User_batter.objects.get(user=user, uniform_number=uniform_number), "batter"
-    except User_batter.DoesNotExist:
-        return get_object_or_404(User_pitcher, user=user, uniform_number=uniform_number), "pitcher"
+    batter = User_batter.objects.filter(uniform_number=uniform_number, user=user).first()
+    if batter:
+        return batter, "batter"
+
+    pitcher = User_pitcher.objects.filter(uniform_number=uniform_number, user=user).first()
+    if pitcher:
+        return pitcher, "pitcher"
+
+    return None, None
 
 def get_user_player_batting(player: User_batter):    #オリジナル打撃成績取得
-    return get_object_or_404(User_batting_status, player=player)
+    return User_batting_status.objects.filter(player=player).first()
 
 def get_user_player_pitching(player: User_pitcher):    #オリジナル投球成績取得
-    return get_object_or_404(User_pitching_status, player=player)
+    return User_pitching_status.objects.filter(player=player).first()
 
 #ユーザー登録
-def creata_user(email: str, password: str, username: str, first_name: str):
-    User.objects.create_user(
+def create_user(email: str, password: str, username: str, first_name: str):
+    return User.objects.create_user(
         email=email,
         password=password,
         username=username,

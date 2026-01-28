@@ -5,12 +5,12 @@ def get_allplayer():    #選手全件取得
     pitchers = Pitcher.objects.all()
     return list(batters)+list(pitchers)
 
-def get_playersresult(name: str):    #名前で選手取得
+def get_player_by_name(name: str):    #名前で選手取得
     batters = Batter.objects.filter(player_name__contains=name) if name else []
     pitchers = Pitcher.objects.filter(player_name__contains=name) if name else []
     return list(batters)+list(pitchers)
     
-def get_player(uniform_number: int):    #背番号で選手取得
+def get_player_by_unform_number(uniform_number: int):    #背番号で選手取得
     batter = Batter.objects.filter(uniform_number=uniform_number).first()
     if batter:
         return batter, "batter"
@@ -21,7 +21,6 @@ def get_player(uniform_number: int):    #背番号で選手取得
 
     return None, None
 
-  
 def get_player_batting(uniform_number: int):    #打撃成績取得
     return Batting_status.objects.filter(uniform_number=uniform_number)
 
@@ -34,7 +33,7 @@ def get_user_batters(user: User):    #オリジナル打者取得
 def get_user_pitchers(user: User):    #オリジナル投手取得
     return User_pitcher.objects.filter(user=user)
 
-def get_user_player(uniform_number: int, user: User):    #オリジナル選手全取得
+def get_user_player_by_uniform_number(uniform_number: int, user: User):    #オリジナル選手全取得
     batter = User_batter.objects.filter(uniform_number=uniform_number, user=user).first()
     if batter:
         return batter, "batter"

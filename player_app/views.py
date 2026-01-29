@@ -9,7 +9,7 @@ from django.contrib.auth import login as auth_login, logout as auth_logout, auth
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 import traceback
-from .services import get_player_with_metrics
+from .services import get_player_with_metrics, get_original_player_with_metrics
 
 
 def search(request):    #検索画面
@@ -279,21 +279,7 @@ def original_all_player(request):
 
 @login_required
 def original_player_detail(request, uniform_number):
-    player, player_type = getter["user_player_by_uniform_number"](uniform_number, request.user)
-    batting = None
-    pitching = None
-
-    if player_type == "batter":
-        batting = getter["user_batting"](player)
-    else:
-        pitching = getter["user_pitching"](player)
-
-    metrics = batter_metrics(batting) if batting else pitcher_metrics(pitching)
-
-    context = {
-        "player": player,
-        "batting": batting,
-        "pitching": pitching,
-        "metrics": metrics
-    }
-    return render(request, "original_player_detail.html", context)
+    text = get_original_player_with_metrics(uniform_number, request.user)
+    if not text:
+        return render(request, "404.html")
+    return render(request, "original_player_detail.html", text)

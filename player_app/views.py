@@ -9,7 +9,7 @@ from django.contrib.auth import login as auth_login, logout as auth_logout, auth
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 import traceback
-from .services import get_player_with_stats, collect_player_csv_data
+from .services import get_player_with_metrics
 
 
 def search(request):    #検索画面
@@ -27,7 +27,7 @@ def result(request):    #検索結果表示　
 
 #背番号から選手個人の情報を引き出す　nameはバーに表示するのに必要だったため
 def player_detail(request, uniform_number, player_name):
-    text = get_player_with_stats(uniform_number)
+    text = get_player_with_metrics(uniform_number)
     if not text:
         return render(request, "404.html")
     return render(request, "player.html", text)
@@ -42,7 +42,7 @@ def player_moreinfo(request, uniform_number):
 
 #選手データをCSVでダウンロード
 def player_csv(request, uniform_number):
-    text = collect_player_csv_data(uniform_number)
+    text = get_player_with_metrics(uniform_number)
     if not text:
         return render(request, "404.html")
     

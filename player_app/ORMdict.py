@@ -1,21 +1,20 @@
-from .ORMs import getter,setter
+from . import ORMs
 
-#ORMsで定義した関数を辞書にまとめて見やすくする
 getter = {
-    "players":getter.get_playersresult,
-    "player":getter.get_player,
-    "all_player":getter.get_allplayer,
-    "player_batting":getter.get_player_batting,
-    "player_pitching":getter.get_player_pitching,
-    "user_batter":getter.get_user_batters,
-    "user_pitcher":getter.get_user_pitchers,
-    "user_player":getter.get_user_player,
-    "user_batting":getter.get_user_player_batting,
-    "user_pitching":getter.get_user_player_pitching
+    "all_player": ORMs.get_allplayer,
+    "player_by_name": ORMs.get_player_by_name,
+    "player_by_uniform_number": ORMs.get_player_by_uniform_number,
+    "player_batting": ORMs.get_player_batting,
+    "player_pitching": ORMs.get_player_pitching,
+    "user_batter": ORMs.get_user_batter,
+    "user_pitcher": ORMs.get_user_pitcher,
+    "user_player_by_uniform_number": ORMs.get_user_player_by_uniform_number,
+    "user_batting": ORMs.get_user_player_batting,
+    "user_pitching": ORMs.get_user_player_pitching,
 }
 
 setter = {
-    "create_user":setter.creata_user,
-    "create_batter":setter.create_batter,
-    "create_pitcher":setter.create_pitcher
+    "create_user": ORMs.create_user,
+    "create_batter": ORMs.create_batter,
+    "create_pitcher": ORMs.create_pitcher,
 }

@@ -20,13 +20,13 @@ def result(request):    #検索結果表示　
     players = []
     if request.method == "POST":
         name = request.POST.get("player_name", "") 
-        players = getter["players"](name)
+        players = getter["player_by_name"](name)
         text = {"name": name, "players": players}
     return render(request, "result.html", text)
 
 #背番号から選手個人の情報を引き出す　nameはバーに表示するのに必要だったため
 def player_detail(request, uniform_number, player_name):
-    player, player_type = getter["player"](uniform_number)
+    player, player_type = getter["player_by_uniform_number"](uniform_number)
     batting = None
     pitching = None
     
@@ -48,7 +48,7 @@ def player_detail(request, uniform_number, player_name):
 
 #詳細情報取得
 def player_moreinfo(request, uniform_number):
-    player, player_type = getter["player"](uniform_number)
+    player, player_type = getter["player_by_uniform_number"](uniform_number)
     batting = None
     pitching = None
     
@@ -72,7 +72,7 @@ def player_moreinfo(request, uniform_number):
 
 #選手データをCSVでダウンロード
 def player_csv(request, uniform_number):
-    player, player_type = getter["player"](uniform_number)
+    player, player_type = getter["player_by_uniform_number"](uniform_number)
     batting = None
     pitching = None
     
@@ -322,7 +322,7 @@ def original_all_player(request):
 
 @login_required
 def original_player_detail(request, uniform_number):
-    player, player_type = getter["user_player"](uniform_number, request.user)
+    player, player_type = getter["user_player_by_uniform_number"](uniform_number, request.user)
     batting = None
     pitching = None
 
@@ -346,4 +346,3 @@ def original_player_detail(request, uniform_number):
         "metrics": metrics
     }
     return render(request, "original_player_detail.html", context)
-

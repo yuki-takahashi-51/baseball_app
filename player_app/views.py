@@ -9,6 +9,7 @@ from django.contrib.auth import login as auth_login, logout as auth_logout, auth
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 import traceback
+from .services import get_player_with_metrics, get_original_player_with_metrics
 
 
 def search(request):    #検索画面
@@ -16,8 +17,8 @@ def search(request):    #検索画面
     return render(request, "search.html", {"form":form_search})
 
 def result(request):    #検索結果表示　
-    name = ""
-    players = []
+    text = {"name": "", "players": []}
+    
     if request.method == "POST":
         name = request.POST.get("player_name", "") 
         players = getter["player_by_name"](name)
@@ -26,68 +27,29 @@ def result(request):    #検索結果表示　
 
 #背番号から選手個人の情報を引き出す　nameはバーに表示するのに必要だったため
 def player_detail(request, uniform_number, player_name):
-    player, player_type = getter["player_by_uniform_number"](uniform_number)
-    batting = None
-    pitching = None
-    
-    if player_type == "batter":
-        try:
-            batting = getter["player_batting"](player)
-        except Batting_status.DoesNotExist:
-            batting = None
-            pitching = None
-    else:
-        try:
-            pitching = getter["player_pitching"](player)
-        except Pitching_status.DoesNotExist:
-            pitching = None
-            batting = None
-
-    text = {"player": player, "batting": batting, "pitching": pitching}
+    text = get_player_with_metrics(uniform_number)
+    if not text:
+        return render(request, "404.html")
     return render(request, "player.html", text)
 
 #詳細情報取得
 def player_moreinfo(request, uniform_number):
-    player, player_type = getter["player_by_uniform_number"](uniform_number)
-    batting = None
-    pitching = None
-    
-    if player_type == "batter":
-        try:
-            batting = getter["player_batting"](player)
-        except Batting_status.DoesNotExist:
-            batting = None
-            pitching = None
-    else:
-        try:
-            pitching = getter["player_pitching"](player)
-        except Pitching_status.DoesNotExist:
-            pitching = None
-            batting = None
-    #指標計算用の関数を取得
-    metrics = batter_metrics(batting) if batting else pitcher_metrics(pitching)      
-    
-    text = {"player": player, "batting": batting, "pitching": pitching, "metrics":metrics}
+    text = get_player_with_metrics(uniform_number)
+    if not text:
+        return render(request, "404.html")
+
     return render(request, "player_detail.html", text)
 
 #選手データをCSVでダウンロード
 def player_csv(request, uniform_number):
-    player, player_type = getter["player_by_uniform_number"](uniform_number)
-    batting = None
-    pitching = None
+    text = get_player_with_metrics(uniform_number)
+    if not text:
+        return render(request, "404.html")
     
-    if player_type == "batter":
-        try:
-            batting = getter["player_batting"](player)
-        except Batting_status.DoesNotExist:
-            batting = None
-            pitching = None
-    else:
-        try:
-            pitching = getter["player_pitching"](player)
-        except Pitching_status.DoesNotExist:
-            pitching = None
-            batting = None
+    player = text["player"]
+    batting = text["batting"]
+    pitching = text["pitching"]
+    metrics = text["metrics"]
 
     response = HttpResponse(content_type="text/csv")
     response["Content-Disposition"] = f'attachment; filename="{player.player_name}_stats.csv"'
@@ -108,7 +70,6 @@ def player_csv(request, uniform_number):
     writer.writerow([])
 
     if batting:
-        metrics_bat = batter_metrics(batting)
         writer.writerow(["打撃成績"])
         writer.writerow(["試合数","打席","打数","安打","二塁打","三塁打","本塁打","得点","打点","犠打","犠飛","四球","死球","三振","併殺"])
         writer.writerow([
@@ -119,12 +80,10 @@ def player_csv(request, uniform_number):
         ])
         writer.writerow([])
         writer.writerow(["打撃指標"])
-        for key, value in metrics_bat.items():
+        for key, value in metrics.items():
             writer.writerow([key, value])
-        writer.writerow([])
 
     if pitching:
-        metrics_pitch = pitcher_metrics(pitching)
         writer.writerow(["投球成績"])
         writer.writerow(["登板数","投球回","勝","敗","ホールド","HP","セーブ","防御率",
                          "完投","完封","QS","対戦打者数","奪三振","被安打","被本塁打",
@@ -137,12 +96,10 @@ def player_csv(request, uniform_number):
         pitching.fourball, pitching.deadBall, pitching.intWalk, pitching.noFour,
         pitching.wildPitch, pitching.balk, pitching.lostScore, pitching.earnedRun
     ])
-
         writer.writerow([])
         writer.writerow(["投手指標"])
-        for key, value in metrics_pitch.items():
+        for key, value in metrics.items():
             writer.writerow([key, value])
-        writer.writerow([])
     return response
 
 #全選手情報取得
@@ -245,72 +202,53 @@ def register_original_batter(request):
 #オリジナル投手登録　デバックの跡は見返しのため残す
 @login_required 
 def register_original_pitcher(request):
-    print("create_pitcher called with:", locals())
     if request.method == "POST":
         form_register_pitcher = forms.Register_original_pitcher(request.POST)
-        print(request.POST)
         if form_register_pitcher.is_valid():
-            print("create_pitcher called with:", locals())
-            print("Form is valid!", form_register_pitcher.cleaned_data)
             cd = form_register_pitcher.cleaned_data
-            def safe_int(val):
-                try:
-                    return int(val)
-                except (TypeError, ValueError):
-                    return 0
-            def safe_float(val):
-                try:
-                    return float(val)
-                except (TypeError, ValueError):
-                    return 0.0
-            try:
-                pitcher = setter["create_pitcher"](
-                    user=request.user,
-                    uniform_number=cd["uniform_number"],
-                    player_name=cd["player_name"],
-                    position=cd["position"],
-                    birthday=cd.get("birthday") or None,
-                    batting_hand=cd.get("batting_hand") or None,
-                    throwing_hand=cd.get("throwing_hand") or None,
-                    games=safe_int(cd.get("games")),
-                    ERA=safe_float(cd.get("ERA")),
-                    win=safe_int(cd.get("win")),
-                    lose=safe_int(cd.get("lose")),
-                    saves=safe_int(cd.get("saves")),
-                    hold=safe_int(cd.get("hold")),
-                    hp=safe_int(cd.get("hp")),
-                    fullIning=safe_int(cd.get("fullIning")),
-                    perfect=safe_int(cd.get("perfect")),
-                    noFour=safe_int(cd.get("noFour")),
-                    batter=safe_int(cd.get("batter")),
-                    ining=safe_int(cd.get("ining")),
-                    hit=safe_int(cd.get("hit")),
-                    homerun=safe_int(cd.get("homerun")),
-                    fourball=safe_int(cd.get("fourball")),
-                    intWalk=safe_int(cd.get("intWalk")),
-                    deadBall=safe_int(cd.get("deadBall")),
-                    strikeOut=safe_int(cd.get("strikeOut")),
-                    wildPitch=safe_int(cd.get("wildPitch")),
-                    balk=safe_int(cd.get("balk")),
-                    lostScore=safe_int(cd.get("lostScore")),
-                    earnedRun=safe_int(cd.get("earnedRun")),
-                    QS=safe_int(cd.get("QS"))
-                )
-                print("pitcher created:", pitcher.id)
-                print(User_pitching_status.objects.filter(player=pitcher).exists())
-                messages.success(request, "投手を登録しました。")
-                return redirect("player_app:search") 
-            except Exception as e:
-                    print("pitcher creation failed:", e)
-                    traceback.print_exc()
-                    messages.error(request, f"登録に失敗しました: {e}")
-        else:
-            print("Form errors:", form_register_pitcher.errors)
+            setter["create_pitcher"](
+                user=request.user,
+                uniform_number=cd["uniform_number"],
+                player_name=cd["player_name"],
+                position=cd["position"],
+                birthday=cd.get("birthday") or None,
+                batting_hand=cd.get("batting_hand") or None,
+                throwing_hand=cd.get("throwing_hand") or None,
+                games=cd.get("games", 0),
+                ERA=cd.get("ERA", 0),
+                win=cd.get("win", 0),
+                lose=cd.get("lose", 0),
+                saves=cd.get("saves", 0),
+                hold=cd.get("hold", 0),
+                hp=cd.get("hp", 0),
+                fullIning=cd.get("fullIning", 0),
+                perfect=cd.get("perfect", 0),
+                noFour=cd.get("noFour", 0),
+                batter=cd.get("batter", 0),
+                ining=cd.get("ining", 0),
+                hit=cd.get("hit", 0),
+                homerun=cd.get("homerun", 0),
+                fourball=cd.get("fourball", 0),
+                intWalk=cd.get("intWalk", 0),
+                deadBall=cd.get("deadBall", 0),
+                strikeOut=cd.get("strikeOut", 0),
+                wildPitch=cd.get("wildPitch", 0),
+                balk=cd.get("balk", 0),
+                lostScore=cd.get("lostScore", 0),
+                earnedRun=cd.get("earnedRun", 0),
+                QS=cd.get("QS", 0),
+            )
+            messages.success(request, "投手を登録しました。")
+            return redirect("player_app:search")
     else:
         form_register_pitcher = forms.Register_original_pitcher()
-    print("Saved successfully")
-    return render(request, "register_original_pitcher.html", {"form": form_register_pitcher})
 
+    return render(
+        request,
+        "register_original_pitcher.html",
+        {"form": form_register_pitcher},
+    )
+    
 #オリジナル選手全件取得
 @login_required
 def original_all_player(request):
@@ -322,27 +260,7 @@ def original_all_player(request):
 
 @login_required
 def original_player_detail(request, uniform_number):
-    player, player_type = getter["user_player_by_uniform_number"](uniform_number, request.user)
-    batting = None
-    pitching = None
-
-    if player_type == "batter":
-        try:
-            batting = getter["user_batting"](player)
-        except User_batting_status.DoesNotExist:
-            batting = None
-    else:
-        try:
-            pitching = getter["user_pitching"](player)
-        except User_pitching_status.DoesNotExist:
-            pitching = None
-
-    metrics = batter_metrics(batting) if batting else pitcher_metrics(pitching)
-
-    context = {
-        "player": player,
-        "batting": batting,
-        "pitching": pitching,
-        "metrics": metrics
-    }
-    return render(request, "original_player_detail.html", context)
+    text = get_original_player_with_metrics(uniform_number, request.user)
+    if not text:
+        return render(request, "404.html")
+    return render(request, "original_player_detail.html", text)

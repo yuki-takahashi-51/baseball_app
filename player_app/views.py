@@ -9,6 +9,7 @@ from django.contrib.auth import login as auth_login, logout as auth_logout, auth
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 import traceback
+from .services import get_player_with_stats
 
 
 def search(request):    #検索画面
@@ -26,48 +27,22 @@ def result(request):    #検索結果表示　
 
 #背番号から選手個人の情報を引き出す　nameはバーに表示するのに必要だったため
 def player_detail(request, uniform_number, player_name):
-    player, player_type = getter["player_by_uniform_number"](uniform_number)
-    batting = None
-    pitching = None
-    
-    if player_type == "batter":
-        try:
-            batting = getter["player_batting"](player)
-        except Batting_status.DoesNotExist:
-            batting = None
-            pitching = None
-    else:
-        try:
-            pitching = getter["player_pitching"](player)
-        except Pitching_status.DoesNotExist:
-            pitching = None
-            batting = None
-
-    text = {"player": player, "batting": batting, "pitching": pitching}
+    text = get_player_with_stats(uniform_number)
+    if not text:
+        return render(request, "404.html")
     return render(request, "player.html", text)
 
 #詳細情報取得
 def player_moreinfo(request, uniform_number):
-    player, player_type = getter["player_by_uniform_number"](uniform_number)
-    batting = None
-    pitching = None
+    text = get_player_with_stats(uniform_number)
+    if not text:
+        return render(request, "404.html")
     
-    if player_type == "batter":
-        try:
-            batting = getter["player_batting"](player)
-        except Batting_status.DoesNotExist:
-            batting = None
-            pitching = None
-    else:
-        try:
-            pitching = getter["player_pitching"](player)
-        except Pitching_status.DoesNotExist:
-            pitching = None
-            batting = None
+    batting = text["batting"]
+    pitching = text["pitching"]
     #指標計算用の関数を取得
-    metrics = batter_metrics(batting) if batting else pitcher_metrics(pitching)      
-    
-    text = {"player": player, "batting": batting, "pitching": pitching, "metrics":metrics}
+    metrics = batter_metrics(batting) if batting else pitcher_metrics(pitching)
+    text["metrics"] = metrics
     return render(request, "player_detail.html", text)
 
 #選手データをCSVでダウンロード

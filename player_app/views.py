@@ -17,8 +17,8 @@ def search(request):    #検索画面
     return render(request, "search.html", {"form":form_search})
 
 def result(request):    #検索結果表示　
-    name = ""
-    players = []
+    text = {"name": "", "players": []}
+    
     if request.method == "POST":
         name = request.POST.get("player_name", "") 
         players = getter["player_by_name"](name)

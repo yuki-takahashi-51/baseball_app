@@ -289,15 +289,9 @@ def original_player_detail(request, uniform_number):
     pitching = None
 
     if player_type == "batter":
-        try:
-            batting = getter["user_batting"](player)
-        except User_batting_status.DoesNotExist:
-            batting = None
+        batting = getter["user_batting"](player)
     else:
-        try:
-            pitching = getter["user_pitching"](player)
-        except User_pitching_status.DoesNotExist:
-            pitching = None
+        pitching = getter["user_pitching"](player)
 
     metrics = batter_metrics(batting) if batting else pitcher_metrics(pitching)
 

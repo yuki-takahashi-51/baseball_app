@@ -34,15 +34,10 @@ def player_detail(request, uniform_number, player_name):
 
 #詳細情報取得
 def player_moreinfo(request, uniform_number):
-    text = get_player_with_stats(uniform_number)
+    text = get_player_with_metrics(uniform_number)
     if not text:
         return render(request, "404.html")
-    
-    batting = text["batting"]
-    pitching = text["pitching"]
-    #指標計算用の関数を取得
-    metrics = batter_metrics(batting) if batting else pitcher_metrics(pitching)
-    text["metrics"] = metrics
+
     return render(request, "player_detail.html", text)
 
 #選手データをCSVでダウンロード

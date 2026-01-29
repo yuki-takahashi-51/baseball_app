@@ -1,5 +1,6 @@
 from .ORMdict import getter
 from .player_metrics import batter_metrics, pitcher_metrics
+from .player_metrics import batter_metrics, pitcher_metrics
 
 def get_player_with_stats(uniform_number):
     """
@@ -44,3 +45,22 @@ def collect_player_csv_data(uniform_number):
         "pitching": pitching,
         "metrics": metrics,
     }
+    
+def get_player_with_metrics(uniform_number):
+    """
+    選手情報取得処理に「指標計算」を付与するサービス
+    None判定のみを行い、例外処理や分岐制御はViewに持ち込まない
+    """
+    data = get_player_with_stats(uniform_number)
+    if not data:
+        return None
+
+    batting = data["batting"]
+    pitching = data["pitching"]
+
+    if batting:
+        data["metrics"] = batter_metrics(batting)
+    elif pitching:
+        data["metrics"] = pitcher_metrics(pitching)
+    else:
+        data["metrics"] = {}

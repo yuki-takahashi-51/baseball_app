@@ -9,7 +9,7 @@ from django.contrib.auth import login as auth_login, logout as auth_logout, auth
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 import traceback
-from .services import get_player_with_stats
+from .services import get_player_with_stats, collect_player_csv_data
 
 
 def search(request):    #検索画面
@@ -47,22 +47,14 @@ def player_moreinfo(request, uniform_number):
 
 #選手データをCSVでダウンロード
 def player_csv(request, uniform_number):
-    player, player_type = getter["player_by_uniform_number"](uniform_number)
-    batting = None
-    pitching = None
+    text = collect_player_csv_data(uniform_number)
+    if not text:
+        return render(request, "404.html")
     
-    if player_type == "batter":
-        try:
-            batting = getter["player_batting"](player)
-        except Batting_status.DoesNotExist:
-            batting = None
-            pitching = None
-    else:
-        try:
-            pitching = getter["player_pitching"](player)
-        except Pitching_status.DoesNotExist:
-            pitching = None
-            batting = None
+    player = text["player"]
+    batting = text["batting"]
+    pitching = text["pitching"]
+    metrics = text["metrics"]
 
     response = HttpResponse(content_type="text/csv")
     response["Content-Disposition"] = f'attachment; filename="{player.player_name}_stats.csv"'
@@ -83,7 +75,6 @@ def player_csv(request, uniform_number):
     writer.writerow([])
 
     if batting:
-        metrics_bat = batter_metrics(batting)
         writer.writerow(["打撃成績"])
         writer.writerow(["試合数","打席","打数","安打","二塁打","三塁打","本塁打","得点","打点","犠打","犠飛","四球","死球","三振","併殺"])
         writer.writerow([
@@ -94,12 +85,10 @@ def player_csv(request, uniform_number):
         ])
         writer.writerow([])
         writer.writerow(["打撃指標"])
-        for key, value in metrics_bat.items():
+        for key, value in metrics.items():
             writer.writerow([key, value])
-        writer.writerow([])
 
     if pitching:
-        metrics_pitch = pitcher_metrics(pitching)
         writer.writerow(["投球成績"])
         writer.writerow(["登板数","投球回","勝","敗","ホールド","HP","セーブ","防御率",
                          "完投","完封","QS","対戦打者数","奪三振","被安打","被本塁打",
@@ -112,12 +101,10 @@ def player_csv(request, uniform_number):
         pitching.fourball, pitching.deadBall, pitching.intWalk, pitching.noFour,
         pitching.wildPitch, pitching.balk, pitching.lostScore, pitching.earnedRun
     ])
-
         writer.writerow([])
         writer.writerow(["投手指標"])
-        for key, value in metrics_pitch.items():
+        for key, value in metrics.items():
             writer.writerow([key, value])
-        writer.writerow([])
     return response
 
 #全選手情報取得
